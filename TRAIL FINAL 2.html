@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☠ One Piece Treasure Hunt ☠</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pirata+One&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Pirata One', cursive;
+            background: url('https://i.postimg.cc/VLWkDJ14/08bbbf662abf6ccc610216983f3c5bf1.jpg') no-repeat center center/cover;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            text-align: center;
+            background-attachment: fixed;
+            transition: background 1s ease-in-out;
+        }
+
+        h1, h2 {
+            color: #ff0000;
+            text-shadow: 0 0 15px #000;
+            transition: all 0.5s ease-in-out;
+        }
+
+        .content-wrapper {
+            transition: filter 0.6s ease-in-out;
+        }
+
+        .blurred {
+            filter: blur(8px);
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.25); 
+            border-radius: 12px;
+            backdrop-filter: blur(18px); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), background 0.8s ease;
+        }
+
+        .container:hover {
+            transform: scale(1.03);
+            background: rgba(0, 0, 0, 0.4); 
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            transition: opacity 0.5s ease;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #ed2a11, #ff4500);
+            color: white;
+            padding: 10px 20px; 
+            border: none;
+            border-radius: 6px;
+            font-size: 16px; 
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), background 0.6s ease;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background: linear-gradient(45deg, #ff6347, #ff0000);
+            transform: scale(1.15);
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            text-align: center;
+            transition: background 0.4s ease, transform 0.4s ease;
+        }
+
+        input[type="text"]:focus {
+            background: rgba(255, 255, 255, 0.25);
+            outline: none;
+            transform: scale(1.05);
+        }
+
+        .message {
+            margin-top: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        .correct, .wrong {
+            opacity: 1;
+        }
+
+        .correct {
+            color: #32CD32;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+
+        .wrong {
+            color: #FF6347;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        .final-box {
+            display: none;
+        }
+
+        .treasure-img {
+            width: 250px;
+            margin-top: 20px;
+            border-radius: 10px;
+            animation: glow 2s infinite alternate ease-in-out;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.7);
+            background: rgba(0, 0, 0, 0.85);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 0 25px #000;
+            color: #fff;
+            z-index: 999;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease-in-out;
+            opacity: 0;
+        }
+
+        .popup.show {
+            display: block;
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px #FFD700, 0 0 20px #FF4500;
+            }
+            to {
+                box-shadow: 0 0 20px #FFD700, 0 0 40px #FF6347;
+            }
+        }
+
+        /* Additional Styles for Attractiveness */
+        .container h2 {
+            font-size: 24px;
+            text-decoration: underline;
+        }
+
+        .button {
+            font-weight: bold;
+            border: 2px solid #fff;
+        }
+
+        .button:hover {
+            background: linear-gradient(45deg, #ff6347, #ff0000);
+            border: 2px solid #ff6347;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+<div class="content-wrapper" id="content-wrapper">
+
+    <!-- Welcome Screen -->
+    <div class="container" id="welcome-box">
+        <h1>☠ ONE PIECE TREASURE HUNT ☠</h1>
+        <p>Embark on an epic adventure to find the legendary treasure!</p>
+        <button class="button" onclick="startHunt()" aria-label="Start the treasure hunt adventure">Start Adventure</button>
+    </div>
+
+    <!-- Riddle Section -->
+    <div class="container" id="riddle-box" style="display:none;">
+        <h2>Riddle: The Final Clue!</h2>
+        <div id="riddle-content">
+            <p id="riddle-text">"I'm the key to hidden places, but I open no doors.  
+            I'm filled with lines, yet I hold no words.  
+            What am I?"</p>
+            <input type="text" id="answer" placeholder="Your Answer Here" aria-label="Your answer to the riddle">
+            <button class="button" onclick="checkAnswer()" aria-label="Submit your answer">Submit</button>
+            <p id="message" class="message"></p>
+        </div>
+    </div>
+
+    <!-- Final Treasure Reveal -->
+    <div class="container final-box" id="final-box" style="display:none;">
+        <h1>You Found the Clue to<br> One Piece!</h1>
+        <img src="https://i.postimg.cc/xd1wMBk5/2sce-Th6-Noi-E3-Fq-Rz-Rs-DXJw-A7-BXB-2sce-Tki-Rj-Sq-Vz-Oh-ZSaa-Rq-KR5j66-2sce-Vd5jf-MBDv6-Ikjvcl-OFp-DZAt-422x422.webp" 
+             alt="Treasure" class="treasure-img">
+        
+             <button class="button" onclick="downloadPDF()">Download Your Treasure Clue</button>
+
+    </div>
+</div>
+
+<!-- Popup -->
+<div id="popup" class="popup">
+    <h2>Congratulations!</h2>
+    <p>You solved the riddle! Get ready to claim the One Piece!</p>
+    <button class="button" onclick="closePopup()" aria-label="Continue to the treasure reveal">Continue</button>
+</div>
+
+<script>
+    const riddles = [
+        { question: "I'm the key to hidden places, but I open no doors. I'm filled with lines, yet I hold no words. What am I?", answer: "map" },
+        { question: "I have hands but no arms. What am I?", answer: "clock" },
+        { question: "I have keys but open no locks. I have space but no room. You can enter, but you can’t leave. What am I?", answer: "keyboard" }
+    ];
+
+    let currentRiddleIndex = 0;
+
+    function startHunt() {
+        document.getElementById("welcome-box").style.display = "none";
+        document.getElementById("riddle-box").style.display = "block";
+        loadRiddle();
+    }
+
+    function loadRiddle() {
+        const riddle = riddles[currentRiddleIndex];
+        document.getElementById("riddle-text").innerText = riddle.question;
+        document.getElementById("answer").value = ""; // Clear previous answer
+        document.getElementById("message").innerText = ""; // Clear previous message
+    }
+
+    function checkAnswer() {
+        const userAnswer = document.getElementById("answer").value.toLowerCase().trim();
+        const messageEl = document.getElementById("message");
+        const correctAnswer = riddles[currentRiddleIndex].answer;
+
+        if (userAnswer === correctAnswer) {
+            messageEl.innerHTML = "✅ Correct!";
+            messageEl.className = "message correct";
+
+            currentRiddleIndex++;
+            if (currentRiddleIndex < riddles.length) {
+                setTimeout(loadRiddle, 800);
+            } else {
+                setTimeout(showPopup, 800);
+            }
+        } else {
+            messageEl.innerHTML = "❌ Incorrect! Try again, matey!";
+            messageEl.className = "message wrong";
+        }
+    }
+
+    function showPopup() {
+        const popup = document.getElementById("popup");
+        const content = document.getElementById("content-wrapper");
+
+        popup.classList.add("show");
+        content.classList.add("blurred");
+    }
+
+    function closePopup() {
+        document.getElementById("popup").classList.remove("show");
+        document.getElementById("content-wrapper").classList.remove("blurred");
+
+        document.getElementById("riddle-box").style.display = "none";
+        document.getElementById("final-box").style.display = "block";
+    }
+    function downloadPDF() {
+    const pdfUrl = "https://raw.githubusercontent.com/your-username/your-repo/main/TH_SECOND_ROUND_NIMIT.pdf"; // Replace with your actual GitHub raw link
+    const link = document.createElement("a");
+    link.href = pdfUrl;
+    link.download = "OnePiece_Treasure_Hunt.pdf"; 
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+
+  
+</script>
+
+</body>
+</html>
